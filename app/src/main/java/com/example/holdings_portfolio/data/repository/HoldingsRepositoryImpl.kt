@@ -17,7 +17,7 @@ class HoldingsRepositoryImpl(
     override fun getHoldings(): Flow<List<DomainHolding>> = flow {
         try {
             val response = apiService.getHoldings()
-            val domainHoldings = response.data.map { it.toDomain() }
+            val domainHoldings = response.data.userHolding.map { it.toDomain() }
             dao.insertAll(domainHoldings.map { it.toEntity() })
             emit(domainHoldings)
         } catch (e: Exception) {

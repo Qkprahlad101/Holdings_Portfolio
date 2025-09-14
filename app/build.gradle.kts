@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.example.holdings_portfolio"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.holdings_portfolio"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
