@@ -18,7 +18,7 @@ class HoldingsRepositoryImplTest {
     @Test
     fun `test getHoldings from api`() {
         runBlocking {
-        // Arrange
+
         val apiService: ApiService = mockk()
         val dao: HoldingsDao = mockk()
         val holding = Holding("TEST", 1, 100.0, 90.0, 100.0)
@@ -29,11 +29,9 @@ class HoldingsRepositoryImplTest {
         coEvery { dao.insertAll(any()) } returns Unit
         coEvery { dao.getAll() } returns emptyList() // if called (fallback)
 
-        // Act
         val repo = HoldingsRepositoryImpl(apiService, dao)
         val result = repo.getHoldings().first()
 
-        // Assert
         assertEquals(1, result.size)
         assertEquals("TEST", result[0].symbol)
     }
