@@ -224,7 +224,7 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                 contentColor = Color.White,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = if (isSummaryExpanded.value) 200.dp else 32.dp)
+                    .padding(bottom = if (isSummaryExpanded.value) 128.dp else 32.dp)
             ) {
                 Icon(
                     imageVector = if (isSummaryExpanded.value) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
