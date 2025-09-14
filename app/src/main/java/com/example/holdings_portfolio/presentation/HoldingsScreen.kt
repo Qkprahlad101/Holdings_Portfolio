@@ -188,7 +188,6 @@ fun FullSummarySection(
         )
         Divider(Modifier.padding(vertical = 8.dp), color = Color.Black)
 
-        // ROW: Profit & Loss* label, arrow button, value
         Row(
             Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -251,7 +250,6 @@ fun SummaryRowWithSuper(label: String, value: String, valueColor: Color = Color.
 fun HoldingRow(symbol: String, ltp: Double, netQty: Int, pnl: Double, isT1: Boolean = false) {
     val pnlColor = if (pnl >= 0) PortfolioGreen else PortfolioRed
     val formattedPnl = pnl.toDisplayCurrency()
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -282,31 +280,49 @@ fun HoldingRow(symbol: String, ltp: Double, netQty: Int, pnl: Double, isT1: Bool
                 }
             }
             Spacer(Modifier.height(24.dp))
-            Text(
-                buildAnnotatedString {
-                    withStyle(SpanStyle(color = Color(0xFF8F98A9))) { append("NET QTY: ") }
-                    withStyle(SpanStyle(color = Color.Black)) { append(netQty.toString()) }
-                },
-                style = MaterialTheme.typography.bodySmall
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "NET QTY:",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF8F98A9)
+                )
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    text = netQty.toString(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Black
+                )
+            }
         }
         Spacer(Modifier.weight(1f))
         Column(horizontalAlignment = Alignment.End) {
-            Text(
-                buildAnnotatedString {
-                    withStyle(SpanStyle(color = Color(0xFF8F98A9))) { append("LTP: ") }
-                    withStyle(SpanStyle(color = Color.Black)) { append(ltp.toDisplayCurrency()) }
-                },
-                style = MaterialTheme.typography.bodySmall
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "LTP:",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF8F98A9)
+                )
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    text = ltp.toDisplayCurrency(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Black
+                )
+            }
             Spacer(Modifier.height(24.dp))
-            Text(
-                buildAnnotatedString {
-                    withStyle(SpanStyle(color = Color(0xFF8F98A9))) { append("P&L: ") }
-                    withStyle(SpanStyle(color = pnlColor)) { append(formattedPnl) }
-                },
-                style = MaterialTheme.typography.bodySmall
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "P&L:",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF8F98A9)
+                )
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    text = formattedPnl,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = pnlColor
+                )
+            }
         }
     }
 }
