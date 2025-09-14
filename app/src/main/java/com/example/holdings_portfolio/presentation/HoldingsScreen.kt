@@ -60,7 +60,7 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                         .padding(vertical = 24.dp)
                 ) {
                     Text(
-                        text = "Portfolio",
+                        text = "Holdings",
                         color = Color.White,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
@@ -69,14 +69,6 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                 }
 
                 Spacer(Modifier.height(8.dp))
-
-                // Holdings
-                Text(
-                    text = "Holdings",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(16.dp)
-                )
 
                 LazyColumn {
                     items(holdings) { holding ->
@@ -128,6 +120,12 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                         Text("Current Value: ${totalValue.toDisplayCurrency()}")
                         Text("Total Investment: ${totalInvestment.toDisplayCurrency()}")
                         Text("Total P&L: ${totalPnL.toDisplayCurrency()} (${pnlPercent.toDisplayPercent()})")
+                        Divider(
+                            modifier = Modifier
+                                .padding(top = 8.dp, bottom = 8.dp),
+                            thickness = 1.dp,
+                            color = Color.Black
+                        )
                         Text("Today's P&L: ${todayPnL.toDisplayCurrency()}")
                     }
                 }
@@ -150,7 +148,6 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
     }
 }
 
-// Example for each item
 @Composable
 fun HoldingRow(
     symbol: String,
@@ -160,7 +157,7 @@ fun HoldingRow(
     isT1: Boolean = false
 ) {
     val pnlColor = if (pnl >= 0) PortfolioGreen else PortfolioRed
-    val formattedPnl = pnl.toDisplayCurrency() // Use currency formatting as before
+    val formattedPnl = pnl.toDisplayCurrency()
 
     Row(
         modifier = Modifier
@@ -191,7 +188,7 @@ fun HoldingRow(
                     }
                 }
             }
-            Spacer(Modifier.height(2.dp))
+            Spacer(Modifier.height(24.dp))
             Text(
                 text = "NET QTY: $netQty",
                 style = MaterialTheme.typography.bodySmall,
@@ -205,6 +202,7 @@ fun HoldingRow(
                 style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFF8F98A9)
             )
+            Spacer(Modifier.height(24.dp))
             Text(
                 text = "P&L: $formattedPnl",
                 fontWeight = FontWeight.Bold,

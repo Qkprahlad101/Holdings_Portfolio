@@ -21,9 +21,6 @@ class HoldingsViewModel(private val getHoldingsUseCase: GetHoldingsUseCase) : Vi
             initialValue = emptyList()
         )
 
-    private val _isExpanded = mutableStateOf(false)
-    val isExpanded: State<Boolean> = _isExpanded
-
     private val _error = mutableStateOf<String?>(null)
     val error: State<String?> = _error
 
@@ -37,10 +34,6 @@ class HoldingsViewModel(private val getHoldingsUseCase: GetHoldingsUseCase) : Vi
                 _error.value = e.message
             }.collect { }
         }
-    }
-
-    fun toggleExpanded() {
-        _isExpanded.value = !_isExpanded.value
     }
 
     fun calculatePnLPercent(totalPnL: Double, totalInvestment: Double): Double {
