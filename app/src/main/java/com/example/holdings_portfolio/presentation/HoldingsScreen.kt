@@ -73,12 +73,12 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                 .padding(paddingValues)
         ) {
             when {
-                isLoading -> { // Check loading first
+                isLoading -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 }
-                error != null -> { // Then error
+                error != null -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
                             text = error ?: "Something went wrong",
@@ -95,7 +95,7 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                         )
                     }
                 }
-                holdings.isEmpty() -> { // Then empty state
+                holdings.isEmpty() -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
                             text = "No holdings found",
@@ -105,7 +105,7 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                         )
                     }
                 }
-                else -> { // Only now, process/consume the real data
+                else -> {
                     Column(Modifier.fillMaxSize()) {
                         LazyColumn {
                             items(holdings) { holding ->
