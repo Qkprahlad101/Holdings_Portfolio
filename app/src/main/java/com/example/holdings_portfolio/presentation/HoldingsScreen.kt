@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.holdings_portfolio.ui.theme.PortfolioBlue
@@ -83,7 +84,7 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                             isT1 = holding.symbol.contains(
                                 "T1",
                                 ignoreCase = true
-                            ) // Adjust as needed
+                            )
                         )
                         Divider(
                             thickness = 1.dp,
@@ -100,44 +101,120 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                 exit = slideOutVertically { it } + fadeOut(),
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(16.dp)
             ) {
                 Card(
                     Modifier
                         .fillMaxWidth()
                         .defaultMinSize(minHeight = 120.dp)
-                        .clip(RoundedCornerShape(24.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(Color.White),
                     elevation = CardDefaults.cardElevation(12.dp),
                 ) {
+
+                    val totalInvestment = viewModel.calculateTotalInvestment(holdings)
+                    val totalPnL = viewModel.calculateTotalPnL(holdings)
+                    val pnlPercent = viewModel.calculatePnLPercent(totalPnL, totalInvestment)
+                    val todayPnL = viewModel.calculateTodaysPnL(holdings)
+                    val totalValue = viewModel.calculateCurrentValue(holdings)
+
                     Column(
                         Modifier
-                            .padding(24.dp)
+                            .padding(12.dp)
                             .fillMaxWidth()
                     ) {
-                        val totalInvestment = viewModel.calculateTotalInvestment(holdings)
-                        val totalPnL = viewModel.calculateTotalPnL(holdings)
-                        val pnlPercent = viewModel.calculatePnLPercent(totalPnL, totalInvestment)
-                        val todayPnL = viewModel.calculateTodaysPnL(holdings)
-                        val totalValue = viewModel.calculateCurrentValue(holdings)
+                        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                buildAnnotatedString {
+                                    append("Current Value")
+                                    withStyle(
+                                        SpanStyle(
+                                            fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                                            baselineShift = BaselineShift.Superscript,
+                                        )
+                                    ) { append("*") }
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Text(
+                                totalValue.toDisplayCurrency(),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
+                        }
 
-                        Text(
-                            "Summary",
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Spacer(Modifier.height(12.dp))
-                        Text("Current Value* ${totalValue.toDisplayCurrency()}")
-                        Text("Total Investment* ${totalInvestment.toDisplayCurrency()}")
-                        Text("Today's P&L: ${todayPnL.toDisplayCurrency()}")
+                        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                buildAnnotatedString {
+                                    append("Total Investment")
+                                    withStyle(
+                                        SpanStyle(
+                                            fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                                            baselineShift = BaselineShift.Superscript
+                                        )
+                                    ) { append("*") }
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Text(
+                                totalInvestment.toDisplayCurrency(),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
+                        }
+
+                        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                buildAnnotatedString {
+                                    append("Today's P&L")
+                                    withStyle(
+                                        SpanStyle(
+                                            fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                                            baselineShift = BaselineShift.Superscript
+                                        )
+                                    ) { append("*") }
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Text(
+                                todayPnL.toDisplayCurrency(),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (todayPnL >= 0) PortfolioGreen else PortfolioRed,
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
+                        }
+
                         Divider(
-                            modifier = Modifier
-                                .padding(top = 8.dp, bottom = 8.dp),
+                            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
                             thickness = 1.dp,
                             color = Color.Black
                         )
-                        Text("Total P&L* ${totalPnL.toDisplayCurrency()} (${pnlPercent.toDisplayPercent()})")
+
+                        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                buildAnnotatedString {
+                                    append("Total P&L")
+                                    withStyle(
+                                        SpanStyle(
+                                            fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                                            baselineShift = BaselineShift.Superscript
+                                        )
+                                    ) { append("*") }
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Text(
+                                "${totalPnL.toDisplayCurrency()} (${pnlPercent.toDisplayPercent()})",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (totalPnL >= 0) PortfolioGreen else PortfolioRed,
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
+                        }
                     }
+
                 }
             }
 
