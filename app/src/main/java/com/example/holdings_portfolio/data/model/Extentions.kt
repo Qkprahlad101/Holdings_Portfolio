@@ -1,7 +1,7 @@
 package com.example.holdings_portfolio.data.model
 
-import com.example.holdingsapp.data.local.HoldingEntity
-import com.example.holdingsapp.domain.model.DomainHolding
+import com.example.holdings_portfolio.data.local.HoldingEntity
+import com.example.holdings_portfolio.domain.model.DomainHolding
 
 fun Holding.toDomain(): DomainHolding = DomainHolding(
     symbol = symbol,

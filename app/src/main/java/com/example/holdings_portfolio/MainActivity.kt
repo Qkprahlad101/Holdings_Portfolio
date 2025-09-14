@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.holdingsapp.presentation.HoldingsScreen
-import com.example.holdingsapp.ui.theme.HoldingsAppTheme
+import com.example.holdings_portfolio.presentation.HoldingsScreen
+import com.example.holdings_portfolio.ui.theme.HoldingsAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

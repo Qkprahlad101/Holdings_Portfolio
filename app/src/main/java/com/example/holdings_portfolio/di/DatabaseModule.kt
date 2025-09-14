@@ -1,7 +1,7 @@
 package com.example.holdings_portfolio.di
 
 import androidx.room.Room
-import com.example.holdingsapp.data.local.AppDatabase
+import com.example.holdings_portfolio.data.local.AppDatabase
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
