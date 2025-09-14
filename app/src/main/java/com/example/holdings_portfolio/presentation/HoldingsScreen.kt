@@ -85,7 +85,6 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                 }
             }
 
-            // --- Bottom Bar: Collapsed/Expanded Summary ---
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -224,7 +223,7 @@ fun HoldingRow(symbol: String, ltp: Double, netQty: Int, pnl: Double, isT1: Bool
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .padding(horizontal = 12.dp, vertical = 12.dp)
     ) {
         Column(Modifier.weight(2f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
