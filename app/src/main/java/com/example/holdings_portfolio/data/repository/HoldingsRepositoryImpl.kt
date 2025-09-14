@@ -25,7 +25,7 @@ class HoldingsRepositoryImpl(
             if (cached.isNotEmpty()) {
                 emit(cached)
             } else {
-                throw e // Or handle error
+                throw e
             }
         }
     }

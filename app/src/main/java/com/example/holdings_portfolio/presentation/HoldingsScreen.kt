@@ -55,10 +55,12 @@ fun SimpleAppBar() {
     )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
     val holdings by viewModel.holdings.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
     val isSummaryExpanded = remember { mutableStateOf(false) }
 
     Scaffold(
@@ -70,51 +72,87 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Column(Modifier.fillMaxSize()) {
-                LazyColumn {
-                    items(holdings) { holding ->
-                        HoldingRow(
-                            symbol = holding.symbol,
-                            ltp = holding.ltp,
-                            netQty = holding.quantity,
-                            pnl = holding.pnl,
-                            isT1 = holding.symbol.contains("T1", ignoreCase = true)
-                        )
-                        Divider(thickness = 1.dp, color = Color(0xFFE5E5E5))
+            when {
+                isLoading -> { // Check loading first
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
                     }
                 }
-            }
-
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .background(Color.LightGray)
-            ) {
-                AnimatedContent(
-                    targetState = isSummaryExpanded.value,
-                    transitionSpec = {
-                        fadeIn() + slideInVertically() with fadeOut() + slideOutVertically()
+                error != null -> { // Then error
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = error ?: "Something went wrong",
+                            color = Color.Red,
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier
+                                .padding(32.dp)
+                                .background(
+                                    color = Color.White.copy(alpha = 0.95f),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .padding(24.dp),
+                            textAlign = TextAlign.Center
+                        )
                     }
-                ) { expanded ->
-                    if (expanded) {
-                        FullSummarySection(
-                            holdings = holdings,
-                            viewModel = viewModel,
-                            onCollapse = { isSummaryExpanded.value = false }
+                }
+                holdings.isEmpty() -> { // Then empty state
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "No holdings found",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center
                         )
-                    } else {
-                        CollapsedSummarySection(
-                            holdings = holdings,
-                            viewModel = viewModel,
-                            onExpand = { isSummaryExpanded.value = true }
-                        )
+                    }
+                }
+                else -> { // Only now, process/consume the real data
+                    Column(Modifier.fillMaxSize()) {
+                        LazyColumn {
+                            items(holdings) { holding ->
+                                HoldingRow(
+                                    symbol = holding.symbol,
+                                    ltp = holding.ltp,
+                                    netQty = holding.quantity,
+                                    pnl = holding.pnl,
+                                    isT1 = holding.symbol.contains("T1", ignoreCase = true)
+                                )
+                                Divider(thickness = 1.dp, color = Color(0xFFE5E5E5))
+                            }
+                        }
+                    }
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                            .background(Color.LightGray)
+                    ) {
+                        AnimatedContent(
+                            targetState = isSummaryExpanded.value,
+                            transitionSpec = {
+                                fadeIn() + slideInVertically() with fadeOut() + slideOutVertically()
+                            }
+                        ) { expanded ->
+                            if (expanded) {
+                                FullSummarySection(
+                                    holdings = holdings,
+                                    viewModel = viewModel,
+                                    onCollapse = { isSummaryExpanded.value = false }
+                                )
+                            } else {
+                                CollapsedSummarySection(
+                                    holdings = holdings,
+                                    viewModel = viewModel,
+                                    onExpand = { isSummaryExpanded.value = true }
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun CollapsedSummarySection(
@@ -159,7 +197,6 @@ fun CollapsedSummarySection(
         )
     }
 }
-
 
 
 @Composable
