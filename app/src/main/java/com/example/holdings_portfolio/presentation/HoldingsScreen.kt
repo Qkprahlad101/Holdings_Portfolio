@@ -71,24 +71,6 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                 .padding(paddingValues)
         ) {
             Column(Modifier.fillMaxSize()) {
-                // Header
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(PortfolioBlue)
-                        .padding(vertical = 24.dp)
-                ) {
-                    Text(
-                        text = "Holdings",
-                        color = Color.White,
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-                Spacer(Modifier.height(8.dp))
-
-                // List
                 LazyColumn {
                     items(holdings) { holding ->
                         HoldingRow(
