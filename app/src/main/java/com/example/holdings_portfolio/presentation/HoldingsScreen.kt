@@ -89,7 +89,7 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(Color.LightGray)
             ) {
                 AnimatedContent(
                     targetState = isSummaryExpanded.value,
@@ -130,21 +130,37 @@ fun CollapsedSummarySection(
             .fillMaxWidth()
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text("Profit & Loss*", style = MaterialTheme.typography.titleMedium)
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
-                text = totalPnL.toDisplayCurrency(),
-                color = pnlColor,
+                buildAnnotatedString {
+                    append("Profit & Loss")
+                    withStyle(
+                        style = SpanStyle(
+                            fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                            baselineShift = BaselineShift.Superscript
+                        )
+                    ) { append("*") }
+                },
                 style = MaterialTheme.typography.titleMedium
             )
             IconButton(onClick = onExpand) {
                 Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Expand Summary")
             }
         }
+        Spacer(Modifier.weight(1f))
+        Text(
+            text = totalPnL.toDisplayCurrency(),
+            color = pnlColor,
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.End
+        )
     }
 }
+
+
 
 @Composable
 fun FullSummarySection(
@@ -163,32 +179,48 @@ fun FullSummarySection(
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        Row(
-            Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("Summary", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            IconButton(onClick = onCollapse) {
-                Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Collapse Summary")
-            }
-        }
-
-        Spacer(Modifier.height(8.dp))
-
         SummaryRowWithSuper("Current Value", totalValue.toDisplayCurrency())
         SummaryRowWithSuper("Total Investment", totalInvestment.toDisplayCurrency())
-        SummaryRowWithSuper("Today's Profit & Loss", todayPnL.toDisplayCurrency(),
+        SummaryRowWithSuper(
+            "Today's Profit & Loss",
+            todayPnL.toDisplayCurrency(),
             valueColor = if (todayPnL >= 0) PortfolioGreen else PortfolioRed
         )
         Divider(Modifier.padding(vertical = 8.dp), color = Color.Black)
-        SummaryRowWithSuper(
-            "Profit & Loss",
-            "${totalPnL.toDisplayCurrency()} (${pnlPercent.toDisplayPercent()})",
-            valueColor = if (totalPnL >= 0) PortfolioGreen else PortfolioRed
-        )
+
+        // ROW: Profit & Loss* label, arrow button, value
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    buildAnnotatedString {
+                        append("Profit & Loss")
+                        withStyle(
+                            style = SpanStyle(
+                                fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                                baselineShift = BaselineShift.Superscript
+                            )
+                        ) { append("*") }
+                    },
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                IconButton(onClick = onCollapse) {
+                    Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Collapse Summary")
+                }
+            }
+            Spacer(Modifier.weight(1f))
+            Text(
+                "${totalPnL.toDisplayCurrency()} (${pnlPercent.toDisplayPercent()})",
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (totalPnL >= 0) PortfolioGreen else PortfolioRed,
+                textAlign = TextAlign.End
+            )
+        }
     }
 }
+
 
 @Composable
 fun SummaryRowWithSuper(label: String, value: String, valueColor: Color = Color.Unspecified) {
