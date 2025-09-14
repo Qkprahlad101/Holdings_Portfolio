@@ -19,3 +19,8 @@ val AppBarIconBg = Color.White
 val CardBg = Color.White
 
 val SurfaceBg = Color(0xFFFAFBFB)
+
+val PortfolioGreen = Color(0xFF22B07D)
+
+val PortfolioRed = Color(0xFFF25B61)
+

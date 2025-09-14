@@ -16,8 +16,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,6 +31,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.holdings_portfolio.ui.theme.PortfolioBlue
+import com.example.holdings_portfolio.ui.theme.PortfolioGreen
+import com.example.holdings_portfolio.ui.theme.PortfolioRed
 import com.example.holdings_portfolio.ui.theme.SurfaceBg
 import org.koin.androidx.compose.koinViewModel
 
@@ -76,28 +78,22 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                     modifier = Modifier.padding(16.dp)
                 )
 
-                LazyColumn(
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(horizontal = 8.dp)
-                ) {
+                LazyColumn {
                     items(holdings) { holding ->
-                        Card(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp),
-                            shape = RoundedCornerShape(20.dp)
-                        ) {
-                            Column(Modifier.padding(16.dp)) {
-                                Text(holding.symbol, fontWeight = FontWeight.Bold)
-                                Text("LTP: ${holding.ltp.toDisplayCurrency()}")
-                                Text("Net Qty: ${holding.quantity}")
-                                Text("P&L: ${holding.pnl.toDisplayCurrency()}")
-                            }
-                        }
+                        HoldingRow(
+                            symbol = holding.symbol,
+                            ltp = holding.ltp,
+                            netQty = holding.quantity,
+                            pnl = holding.pnl,
+                            isT1 = holding.symbol.contains("T1", ignoreCase = true) // Adjust as needed
+                        )
+                        Divider(
+                            thickness = 1.dp,
+                            color = Color(0xFFE5E5E5)
+                        )
                     }
                 }
+
             }
 
             AnimatedVisibility(
@@ -154,6 +150,72 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
     }
 }
 
+// Example for each item
+@Composable
+fun HoldingRow(
+    symbol: String,
+    ltp: Double,
+    netQty: Int,
+    pnl: Double,
+    isT1: Boolean = false
+) {
+    val pnlColor = if (pnl >= 0) PortfolioGreen else PortfolioRed
+    val formattedPnl = pnl.toDisplayCurrency() // Use currency formatting as before
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+    ) {
+        Column(Modifier.weight(2f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = symbol,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.Black
+                )
+                if (isT1) {
+                    Spacer(Modifier.width(4.dp))
+                    Surface(
+                        color = Color.LightGray,
+                        shape = RoundedCornerShape(4.dp),
+                        modifier = Modifier.padding(start = 2.dp)
+                    ) {
+                        Text(
+                            text = "T1 Holding",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.DarkGray,
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                        )
+                    }
+                }
+            }
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text = "NET QTY: $netQty",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(0xFF8F98A9)
+            )
+        }
+        Spacer(Modifier.weight(1f))
+        Column(horizontalAlignment = Alignment.End) {
+            Text(
+                text = "LTP: ${ltp.toDisplayCurrency()}",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(0xFF8F98A9)
+            )
+            Text(
+                text = "P&L: $formattedPnl",
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodySmall,
+                color = pnlColor
+            )
+        }
+    }
+}
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -169,7 +231,7 @@ fun AppTopBar(onFilter: () -> Unit, onProfile: () -> Unit) {
         },
         actions = {
             IconButton(onClick = onFilter) {
-                Icon(Icons.Default.AddCircle, contentDescription = "Filter", tint = Color.White)
+                Icon(Icons.Default.Notifications, contentDescription = "Filter", tint = Color.White)
             }
             IconButton(onClick = onProfile) {
                 Box(
