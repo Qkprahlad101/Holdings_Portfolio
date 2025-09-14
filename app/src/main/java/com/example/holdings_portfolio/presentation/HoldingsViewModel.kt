@@ -43,6 +43,10 @@ class HoldingsViewModel(private val getHoldingsUseCase: GetHoldingsUseCase) : Vi
         _isExpanded.value = !_isExpanded.value
     }
 
+    fun calculatePnLPercent(totalPnL: Double, totalInvestment: Double): Double {
+        return if (totalInvestment != 0.0) totalPnL / totalInvestment * 100 else 0.0
+    }
+
     fun calculateCurrentValue(holdings: List<DomainHolding>): Double =
         holdings.sumOf { it.ltp * it.quantity }
 

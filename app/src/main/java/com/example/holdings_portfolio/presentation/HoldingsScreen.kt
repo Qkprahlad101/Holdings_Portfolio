@@ -1,16 +1,17 @@
 package com.example.holdings_portfolio.presentation
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
@@ -21,66 +22,91 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
     val isExpanded by viewModel.isExpanded
     val error by viewModel.error
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
+    val totalInvestment = viewModel.calculateTotalInvestment(holdings)
+    val totalPnL = viewModel.calculateTotalPnL(holdings)
+    val pnlPercent = viewModel.calculatePnLPercent(totalPnL, totalInvestment)
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         Text(
             text = "Portfolio",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.fillMaxWidth(),
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             textAlign = TextAlign.Center
         )
 
-        if (error != null) {
-            Text(text = "Error: $error", color = MaterialTheme.colorScheme.error)
-        }
-
-        // Summary Card (Expandable)
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            onClick = { viewModel.toggleExpanded() }
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    "Profit & Loss: ₹${viewModel.calculateTotalPnL(holdings)} (${
-                        (viewModel.calculateTotalPnL(
-                            holdings
-                        ) / viewModel.calculateTotalInvestment(holdings) * 100).toInt()
-                    }%)"
-                )
-            }
-        }
-
-        AnimatedVisibility(
-            visible = isExpanded,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Card(modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Current Value: ₹${viewModel.calculateCurrentValue(holdings)}")
-                    Text("Total Investment: ₹${viewModel.calculateTotalInvestment(holdings)}")
-                    Text("Today's P&L: ₹${viewModel.calculateTodaysPnL(holdings)}")
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp, horizontal = 20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = "Profit & Loss:",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = "${totalPnL.toDisplayCurrency()} (${pnlPercent.toDisplayPercent()})",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
 
-        Text("Holdings", style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = "Holdings",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
 
-        LazyColumn {
+        LazyColumn(contentPadding = PaddingValues(bottom = 16.dp)) {
             items(holdings) { holding ->
-                Card(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("${holding.symbol}")
-                        Text("LTP: ₹${holding.ltp}")
-                        Text("Net Qty: ${holding.quantity}")
-                        Text("P&L: ₹${holding.pnl}")
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Column(Modifier.padding(16.dp)) {
+                        Text(
+                            text = holding.symbol,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = "LTP: ${holding.ltp.toDisplayCurrency()}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            text = "Net Qty: ${holding.quantity}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            text = "P&L: ${holding.pnl.toDisplayCurrency()}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
                     }
                 }
             }
