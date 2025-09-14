@@ -127,16 +127,16 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                             style = MaterialTheme.typography.titleMedium
                         )
                         Spacer(Modifier.height(12.dp))
-                        Text("Current Value: ${totalValue.toDisplayCurrency()}")
-                        Text("Total Investment: ${totalInvestment.toDisplayCurrency()}")
-                        Text("Total P&L: ${totalPnL.toDisplayCurrency()} (${pnlPercent.toDisplayPercent()})")
+                        Text("Current Value* ${totalValue.toDisplayCurrency()}")
+                        Text("Total Investment* ${totalInvestment.toDisplayCurrency()}")
+                        Text("Today's P&L: ${todayPnL.toDisplayCurrency()}")
                         Divider(
                             modifier = Modifier
                                 .padding(top = 8.dp, bottom = 8.dp),
                             thickness = 1.dp,
                             color = Color.Black
                         )
-                        Text("Today's P&L: ${todayPnL.toDisplayCurrency()}")
+                        Text("Total P&L* ${totalPnL.toDisplayCurrency()} (${pnlPercent.toDisplayPercent()})")
                     }
                 }
             }
