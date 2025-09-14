@@ -73,19 +73,13 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                 .padding(paddingValues)
         ) {
             when {
-                isLoading == true -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
+                isLoading -> { // Check loading first
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 }
-                error != null -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
+                error != null -> { // Then error
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
                             text = error ?: "Something went wrong",
                             color = Color.Red,
@@ -101,11 +95,8 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                         )
                     }
                 }
-                holdings.isEmpty() -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
+                holdings.isEmpty() -> { // Then empty state
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
                             text = "No holdings found",
                             style = MaterialTheme.typography.titleMedium,
@@ -114,7 +105,7 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                         )
                     }
                 }
-                else -> {
+                else -> { // Only now, process/consume the real data
                     Column(Modifier.fillMaxSize()) {
                         LazyColumn {
                             items(holdings) { holding ->
@@ -129,7 +120,6 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
                             }
                         }
                     }
-
                     Box(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
@@ -162,6 +152,7 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
         }
     }
 }
+
 
 @Composable
 fun CollapsedSummarySection(
