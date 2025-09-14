@@ -12,12 +12,6 @@ val Pink40 = Color(0xFF7D5260)
 
 val PortfolioBlue = Color(0xFF183B56)
 
-val AppBarBg = PortfolioBlue
-
-val AppBarIconBg = Color.White
-
-val CardBg = Color.White
-
 val SurfaceBg = Color(0xFFFAFBFB)
 
 val PortfolioGreen = Color(0xFF22B07D)
