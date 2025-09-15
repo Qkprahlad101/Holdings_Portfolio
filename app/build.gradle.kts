@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.animation)
     implementation(libs.androidx.ui.text)
+    implementation(libs.androidx.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -95,6 +96,4 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     // Pull-to-refresh
-    implementation("com.google.accompanist:accompanist-swiperefresh:0.34.0")
-
-}
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.34.0")}
