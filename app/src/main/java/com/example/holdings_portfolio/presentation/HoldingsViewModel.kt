@@ -25,6 +25,14 @@ class HoldingsViewModel(private val getHoldingsUseCase: GetHoldingsUseCase) : Vi
         loadHoldings()
     }
 
+    /**
+     * Public function to refresh the holdings data
+     * Can be called from UI to manually trigger a refresh
+     */
+    fun refresh() {
+        loadHoldings()
+    }
+
     private fun loadHoldings() {
         viewModelScope.launch {
             _isLoading.value = true

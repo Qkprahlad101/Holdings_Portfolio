@@ -93,4 +93,8 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // Pull-to-refresh
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.34.0")
+
 }
