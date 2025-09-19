@@ -18,3 +18,14 @@ val PortfolioGreen = Color(0xFF22B07D)
 
 val PortfolioRed = Color(0xFFF25B61)
 
+// Light mode customs
+val PortfolioBlueLight = Color(0xFF183B56)
+val SurfaceBgLight = Color(0xFFFAFBFB)
+val PortfolioGreenLight = Color(0xFF22B07D)
+val PortfolioRedLight = Color(0xFFF25B61)
+
+// Dark mode variants (muted backgrounds, brighter accents for visibility)
+val PortfolioBlueDark = Color(0xFF183B56).copy(alpha = 0.8f)  // Slightly transparent for depth
+val SurfaceBgDark = Color(0xFF121212)  // Standard dark surface (adjust if needed)
+val PortfolioGreenDark = Color(0xFF4CAF50)  // Brighter green for dark mode contrast
+val PortfolioRedDark = Color(0xFFFF5252)    // Brighter red for dark mode contrast

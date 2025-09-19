@@ -11,14 +11,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,9 +32,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.holdings_portfolio.domain.model.DomainHolding
-import com.example.holdings_portfolio.ui.theme.*
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.example.holdings_portfolio.ui.theme.PortfolioBlue
+import com.example.holdings_portfolio.ui.theme.PortfolioGreen
+import com.example.holdings_portfolio.ui.theme.PortfolioRed
+import com.example.holdings_portfolio.ui.theme.SurfaceBg
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,109 +55,95 @@ fun SimpleAppBar() {
     )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
-    val uiState by viewModel.uiState.collectAsState()
-    val isRefreshing = uiState.isLoading
-    val summaryExpanded = remember { mutableStateOf(false) }
+    val holdings by viewModel.holdings.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val isSummaryExpanded = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = { SimpleAppBar() },
+        containerColor = SurfaceBg
     ) { paddingValues ->
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(isRefreshing),
-            onRefresh = { viewModel.loadHoldings() },
-            modifier = Modifier
+        Box(
+            Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Box(Modifier.fillMaxSize()) {
-                when {
-                    isRefreshing && uiState.holdings.isEmpty() -> {
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .verticalScroll(rememberScrollState())
-                                .height(600.dp),
-                            contentAlignment = Alignment.Center
-                        ) {}
+            when {
+                isLoading -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
                     }
-                    uiState.error != null -> {
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .verticalScroll(rememberScrollState())
-                                .height(600.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = uiState.error ?: "Error",
-                                color = Color.Red,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(16.dp)
-                            )
-                        }
+                }
+                error != null -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = error ?: "Something went wrong",
+                            color = Color.Red,
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier
+                                .padding(32.dp)
+                                .background(
+                                    color = Color.White.copy(alpha = 0.95f),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .padding(24.dp),
+                            textAlign = TextAlign.Center
+                        )
                     }
-                    uiState.holdings.isEmpty() -> {
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .verticalScroll(rememberScrollState())
-                                .height(600.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "No holdings found",
-                                color = Color.Gray,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(16.dp)
-                            )
-                        }
+                }
+                holdings.isEmpty() -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "No holdings found",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center
+                        )
                     }
-                    else -> {
-                        Column(Modifier.fillMaxSize()) {
-                            LazyColumn {
-                                items(uiState.holdings) { holding ->
-                                    HoldingRow(
-                                        symbol = holding.symbol,
-                                        netQty = holding.quantity,
-                                        ltp = holding.ltp,
-                                        pnl = holding.pnl,
-                                        isT1 = holding.symbol.contains("T1", ignoreCase = true)
-                                    )
-                                    Divider(color = Color.LightGray, thickness = 1.dp)
-                                }
+                }
+                else -> {
+                    Column(Modifier.fillMaxSize()) {
+                        LazyColumn {
+                            items(holdings) { holding ->
+                                HoldingRow(
+                                    symbol = holding.symbol,
+                                    ltp = holding.ltp,
+                                    netQty = holding.quantity,
+                                    pnl = holding.pnl,
+                                    isT1 = holding.symbol.contains("T1", ignoreCase = true)
+                                )
+                                Divider(thickness = 1.dp, color = Color(0xFFE5E5E5))
                             }
                         }
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.BottomCenter)
-                                .background(Color.LightGray)
-                        ) {
-                            AnimatedContent(
-                                targetState = summaryExpanded.value,
-                                transitionSpec = {
-                                    fadeIn() + slideInVertically() with fadeOut() + slideOutVertically()
-                                }
-                            ) { expanded ->
-                                if (uiState.error == null) {
-                                    if (expanded) {
-                                        FullSummarySection(
-                                            holdings = uiState.holdings,
-                                            viewModel = viewModel,
-                                            onCollapse = { summaryExpanded.value = false }
-                                        )
-                                    } else {
-                                        CollapsedSummarySection(
-                                            holdings = uiState.holdings,
-                                            viewModel = viewModel,
-                                            onExpand = { summaryExpanded.value = true }
-                                        )
-                                    }
-                                }
-
+                    }
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                            .background(Color.LightGray)
+                    ) {
+                        AnimatedContent(
+                            targetState = isSummaryExpanded.value,
+                            transitionSpec = {
+                                fadeIn() + slideInVertically() with fadeOut() + slideOutVertically()
+                            }
+                        ) { expanded ->
+                            if (expanded) {
+                                FullSummarySection(
+                                    holdings = holdings,
+                                    viewModel = viewModel,
+                                    onCollapse = { isSummaryExpanded.value = false }
+                                )
+                            } else {
+                                CollapsedSummarySection(
+                                    holdings = holdings,
+                                    viewModel = viewModel,
+                                    onExpand = { isSummaryExpanded.value = true }
+                                )
                             }
                         }
                     }
@@ -163,7 +152,6 @@ fun HoldingsScreen(viewModel: HoldingsViewModel = koinViewModel()) {
         }
     }
 }
-
 
 
 @Composable
